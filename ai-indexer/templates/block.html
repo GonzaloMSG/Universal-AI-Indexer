@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Block - AI Indexer{% endblock %}
+
+{% block content %}
+<a href="javascript:history.back()" class="link" style="display: inline-block; margin-bottom: 1rem; font-weight: 600; font-size: 1.1rem;">&larr; Back to Results</a>
+<h1 style="margin-top: 0;">SQL Block</h1>
+
+<div class="card">
+    <div style="margin-bottom: 1rem;">
+        <span class="badge">{{ doc.statement_type }}</span>
+        {% if doc.object_name %}
+        <span style="font-weight: 600; margin-left: 0.5rem; font-size: 1.25rem;">{{ doc.object_name }}</span>
+        {% endif %}
+    </div>
+    
+    <table style="width: 100%; text-align: left; margin-bottom: 1.5rem; border-collapse: collapse;">
+        <tr>
+            <th style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">File Path</th>
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{{ doc.file_path }}</td>
+        </tr>
+        <tr>
+            <th style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Lines</th>
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{{ doc.line_start }} - {{ doc.line_end }}</td>
+        </tr>
+    </table>
+
+    <div class="snippet" style="font-size: 1rem;">
+        <pre><code class="language-sql">{{ doc.text }}</code></pre>
+    </div>
+</div>
+{% endblock %}

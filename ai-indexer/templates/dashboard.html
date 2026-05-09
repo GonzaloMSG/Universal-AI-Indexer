@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Universal AI Indexer{% endblock %}
+
+{% block content %}
+<h1>🧠 Universal AI Indexer</h1>
+<p style="color: var(--text-secondary); margin-top: -0.5rem; margin-bottom: 2rem;">
+  Your local knowledge base — indexed, searchable, 100% private.
+</p>
+
+<!-- Stats bar -->
+<div style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); margin-bottom: 2rem;">
+  <div class="card" style="text-align:center; padding: 1rem;">
+    <span style="font-size:2rem; font-weight:700; color: var(--accent-color);">{{ total_chunks }}</span>
+    <br><small style="color:var(--text-secondary); text-transform:uppercase; letter-spacing:.05em;">Chunks Indexed</small>
+  </div>
+  <div class="card" style="text-align:center; padding: 1rem;">
+    <span style="font-size:2rem; font-weight:700; color: #a78bfa;">{{ total_files }}</span>
+    <br><small style="color:var(--text-secondary); text-transform:uppercase; letter-spacing:.05em;">Files Indexed</small>
+  </div>
+  <div class="card" style="text-align:center; padding: 1rem;">
+    <span style="font-size:2rem; font-weight:700; color: #34d399;">{{ workspaces|length }}</span>
+    <br><small style="color:var(--text-secondary); text-transform:uppercase; letter-spacing:.05em;">Workspaces</small>
+  </div>
+</div>
+
+<!-- Index a new workspace -->
+<div class="card">
+  <h2 style="margin-bottom:1rem;">➕ Index a Directory</h2>
+  <p style="color:var(--text-secondary); font-size:0.875rem; margin-top:0;">
+    Supported formats: <code>.py .md .sql .txt .json .yaml .js .ts .csv .sh .html .css</code> and more.
+  </p>
+  <form action="/ingest" method="POST" class="input-group">
+    <input type="text" name="name" placeholder="Workspace name (e.g. My Project)" required style="max-width:220px;">
+    <input type="text" name="path" placeholder="Absolute path (e.g. C:\Users\you\myproject)" required>
+    <button type="submit">🚀 Index</button>
+  </form>
+</div>
+
+<!-- Workspaces list -->
+<h2>Your Workspaces</h2>
+<div style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+  {% for ws in workspaces %}
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+      <h3 style="margin:0;">{{ ws.name }}</h3>
+      <span class="badge">id={{ ws.id }}</span>
+    </div>
+    <p style="color: var(--text-secondary); font-size: 0.8rem; word-break: break-all; margin:0;">
+      📁 {{ ws.path }}
+    </p>
+    <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+      <a href="/search?workspace_id={{ ws.id }}" class="link" style="font-size:0.8rem;">🔍 Search</a>
+      <span style="color:var(--border-color);">|</span>
+      <a href="/ask?workspace_id={{ ws.id }}" class="link" style="font-size:0.8rem;">💬 Ask AI</a>
+    </div>
+  </div>
+  {% else %}
+  <p style="color: var(--text-secondary);">No workspaces yet. Index a directory above to get started.</p>
+  {% endfor %}
+</div>
+
+<!-- File type breakdown -->
+{% if by_type %}
+<h2 style="margin-top:2.5rem;">📊 Content Breakdown</h2>
+<div class="card" style="padding:1rem 1.5rem;">
+  {% for row in by_type %}
+  <div style="display:flex; align-items:center; margin-bottom:0.6rem; gap:1rem;">
+    <span style="width:90px; font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">{{ row.statement_type }}</span>
+    <div style="flex:1; background:var(--bg-color); border-radius:999px; height:8px; overflow:hidden;">
+      <div style="height:100%; background:var(--accent-color); border-radius:999px; width:{{ [(row.n / max_chunks * 100)|int, 2]|max }}%;"></div>
+    </div>
+    <span style="font-size:0.875rem; font-weight:600; min-width:3rem; text-align:right;">{{ row.n }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Ask AI - AI Indexer{% endblock %}
+
+{% block content %}
+<h1>Ask AI</h1>
+
+<form action="/ask" method="GET" class="input-group">
+    <input type="text" name="q" value="{{ query }}" placeholder="Ask a question about your code..." required>
+    <button type="submit">Ask</button>
+</form>
+
+{% if answer_data %}
+<div class="card answer-box">
+    <h2>Answer</h2>
+    {{ answer_data.answer | markdown | safe }}
+</div>
+
+<h3>Citations</h3>
+{% for cit in answer_data.citations %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <strong>[{{ loop.index }}] {{ cit.file_path }}</strong>
+        <a href="/block/{{ cit.rowid }}" class="link">View Block</a>
+    </div>
+    <div class="snippet">
+        <pre><code class="language-sql">{{ cit.text }}</code></pre>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}
